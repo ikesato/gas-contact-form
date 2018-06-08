@@ -1,0 +1,66 @@
+<html>
+<head>
+  <title>問い合わせフォーム</title>
+  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+  <script>
+    function onSubmit(token) {
+      var form = document.getElementById("gform");
+      var data = {
+	"email": form.elements["email"].value,
+	"message": form.elements["message"].value,
+	"g-recaptcha-response":  form.elements["g-recaptcha-response"].value,
+      };
+      var url = form.getAttribute("action");
+      var xhr = new XMLHttpRequest();
+      xhr.open("POST", url);
+      xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+      xhr.onreadystatechange = function() {
+        console.log(xhr.status, xhr.statusText, xhr.responseText);
+        var success = false;
+        var detail;
+        if (xhr.status === 200) {
+          if (xhr.readyState === 4) {
+            var res = JSON.parse(xhr.responseText);
+            if (res.result === "OK") {
+              success = true;
+            } else {
+              detail = res.error;
+            }
+          } else {
+            return;
+          }
+        } else {
+          detail = "status: " + xhr.status + ", state: " + xhr.readyState;
+        }
+        if (success) {
+          document.getElementById("posted-success").style.display = "block";
+	  gform.style.display = "none";
+        } else {
+          document.getElementById("posted-error").style.display = "block";
+          document.getElementById("error-detail").innerText = detail;
+        }
+      };
+      var body = Object.keys(data).map(function(k) {
+        return encodeURIComponent(k) + "=" + encodeURIComponent(data[k])
+      }).join("&")
+      xhr.send(body);
+    }
+  </script>
+</head>
+<body>
+  問い合わせテスト
+  <form id="gform" method="post" action="PUT YOUR POST URL">
+    Email: <input id="email" name="email" type="email" value=""><br/>
+    問い合わせ内容:<br/>
+    <textarea id="message" name="message" rows="10" placeholder="問い合わせ内容"></textarea><br/>
+    <button class="g-recaptcha" data-sitekey="PUT YOUR SITE KEY" data-callback="onSubmit">送信</button><br/>
+  </form>
+  <div id="posted-success" style="display:none">
+    お問い合わせ、ありがとうございました。
+  </div>
+  <div id="posted-error" style="display:none">
+    送信に失敗しました。<br/>
+    理由: <span id="error-detail"></span>
+  </div>
+</body>
+</html>

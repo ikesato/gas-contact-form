@@ -1,0 +1,20 @@
+<html>
+<head>
+  <title>問い合わせフォーム</title>
+  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+  <script>
+    function onSubmit(token) {
+      document.getElementById("gform").submit();
+    }
+  </script>
+</head>
+<body>
+  問い合わせテスト
+  <form id="gform" method="post" action="PUT YOUR POST URL">
+    Email: <input id="email" name="email" type="email" value=""><br/>
+    問い合わせ内容:<br/>
+    <textarea id="message" name="message" rows="10" placeholder="問い合わせ内容"></textarea><br/>
+    <button class="g-recaptcha" data-sitekey="PUT YOUR SITE KEY" data-callback="onSubmit">送信</button><br/>
+  </form>
+</body>
+</html>
